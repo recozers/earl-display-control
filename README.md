@@ -1,50 +1,122 @@
-# Earl Display Control Skill
+# Earl Display Control
 
-This repo bundles everything needed to keep the VisuoSpatial Sketchpad (Earl's TV dashboard) awake and refreshed, plus the packaged `.skill` file you can upload to Clawhub or distribute however you like.
+Earl is a house guardian AI whose mind lives on the living room TV. This project powers that display — a full-screen kiosk dashboard called the **VisuoSpatial Sketchpad** that shows Earl's mood, thoughts, household tasks, hot takes, and hand-drawn doodles in real time.
 
-## Repo Layout
+## What It Looks Like
 
-| Path | Purpose |
-| --- | --- |
-| `skills/earl-display-control/` | The actual Skill definition (SKILL.md). This is what Codex loads to learn the workflow. |
-| `VisuoSpatialSketchpad/` | The supporting python + HTML bundle (`earl_api.py`, `update_weather_ping.py`, kiosk assets, etc.). |
-| `VisuoSpatialSketchpad/earl_mind.template.json` | Sanitized starter state; copy it to `earl_mind.json` locally before running the board. |
-| `dist/earl-display-control.skill` | Ready-to-share packaged Skill archive generated earlier. |
+The TV displays a warm, wood-grain-textured dashboard with three main panels:
 
-> Privacy note: the real `VisuoSpatialSketchpad/earl_mind.json` stays local and is gitignored by default. Rename the template or copy it over when you need a clean slate, but don't push the live house state to GitHub.
+- **Earl's Sketchpad** — a cork board filled with doodles, sticky notes, and emoji markers
+- **Important House Stuff** — a priority-coded task list for household reminders (bins night, errands, etc.)
+- **Earl Unplugged** — Earl's hot takes on life, rated by heat level
 
-## Local Prep
+A header bar shows Earl's current mood, energy level, live weather with a 3-day forecast, and whatever's on his mind right now. A footer tracks long-term patterns he's noticed around the house.
 
-1. (Optional) Create a clean virtual environment if you plan to hack on the helper scripts.
-2. Update any content inside `skills/earl-display-control` or `VisuoSpatialSketchpad` as needed.
-3. Re-run the weather or kiosk helper scripts locally to verify everything still works.
+The display refreshes every 5 seconds from a local JSON file, so updates appear almost immediately.
 
-## Re-packaging
+## How It Works
 
-If you change anything and want a fresh `.skill` bundle:
+Everything runs locally on the machine connected to the TV:
 
-```powershell
-# from the workspace root
-python "$env:APPDATA\npm\node_modules\openclaw\skills\skill-creator\scripts\package_skill.py" skills\earl-display-control dist
+1. A simple Python HTTP server (`python -m http.server 8000`) serves the dashboard
+2. Microsoft Edge runs in kiosk mode pointing at `http://localhost:8000/sketchpad.html`
+3. The dashboard reads `earl_mind.json` — a JSON file that holds Earl's entire mental state
+4. AI agents (or helper scripts) update that JSON file through a Python API
+
+### The Python API
+
+The `EarlMind` class in `earl_api.py` provides methods for updating every part of Earl's state:
+
+```python
+from earl_api import EarlMind
+
+mind = EarlMind()
+
+# Set Earl's mood and energy
+mind.set_mood("happy", energy=0.9, vibe="Just noticed the sunset...")
+
+# Post a household reminder
+mind.post_house_stuff(
+    title="Bins go out tonight",
+    detail="It's Wednesday again.",
+    priority="high",
+    category="chores",
+    icon="🗑️"
+)
+
+# Share a hot take
+mind.hot_take("Pineapple on pizza", "Controversial but I respect the audacity", heat=0.6, emoji="🍕")
+
+# Drop a doodle on the sketchpad
+mind.doodle("🌧️", x=0.3, y=0.2, size=30, note="Rain starting")
+
+# Log a long-term pattern
+mind.learn_pattern("The cat sits by the window at 3pm", confidence=0.7, observations=5)
+
+# Persist changes to disk
+mind.save()
 ```
 
-The script validates the skill and drops an updated `dist/earl-display-control.skill` file.
+### Helper Scripts
 
-## Publishing to GitHub
+| Script | What it does |
+| --- | --- |
+| `update_weather_ping.py` | Fetches live weather from Open-Meteo and updates Earl's mood + sketchpad |
+| `update_vibe.py` | Changes Earl's current vibe message |
+| `update_house_stuff.py` | Adds tasks to the Important House Stuff board |
+| `reorder_take.py` | Reorders Earl's hot takes |
+| `remove_noise_take.py` | Removes a specific hot take |
+| `update_mind.py` | General-purpose helper for updating the mind state |
 
-1. `cd earl-display-control-repo`
-2. `git init`
-3. Review `.gitignore` (especially if you plan to exclude `earl_mind.json`).
-4. `git add .`
-5. `git commit -m "Initial import"`
-6. `git remote add origin <your-repo-url>`
-7. `git push -u origin main`
+All scripts live in the `VisuoSpatialSketchpad/` directory.
 
-## Publishing to Clawhub
+## Getting Started
 
-1. Log into https://clawhub.com with your GitHub account.
-2. Create a new Skill entry and point it at the repo you just pushed **or** upload `dist/earl-display-control.skill` directly.
-3. Fill in the metadata + thumbnail.
-4. Publish. Clawhub will handle distribution.
+### Prerequisites
 
-Ping me if you need a sanitized `earl_mind.json` template or want to break the Skill into smaller modules.
+- Python 3
+- A browser with kiosk/fullscreen support (Edge recommended)
+
+### Setup
+
+1. Clone this repo
+2. Copy the template state file to create your live state:
+   ```bash
+   cp VisuoSpatialSketchpad/earl_mind.template.json VisuoSpatialSketchpad/earl_mind.json
+   ```
+3. Start the server:
+   ```bash
+   cd VisuoSpatialSketchpad
+   python -m http.server 8000
+   ```
+4. Open the dashboard in a browser at `http://localhost:8000/sketchpad.html`, or launch a full-screen kiosk:
+   ```powershell
+   Start-Process msedge.exe '--kiosk http://localhost:8000/sketchpad.html --edge-kiosk-type=fullscreen'
+   ```
+
+Earl's TV is now live. Update `earl_mind.json` (directly or via the API) and the display will pick up changes within seconds.
+
+## Project Structure
+
+```
+earl-display-control/
+├── VisuoSpatialSketchpad/
+│   ├── sketchpad.html              # The TV dashboard UI
+│   ├── earl_api.py                  # Python API for updating Earl's state
+│   ├── earl_mind.template.json      # Starter state (copy to earl_mind.json)
+│   ├── update_weather_ping.py       # Weather updater
+│   ├── update_vibe.py               # Vibe message updater
+│   ├── update_house_stuff.py        # House task updater
+│   ├── reorder_take.py              # Hot take reorderer
+│   ├── remove_noise_take.py         # Hot take remover
+│   └── update_mind.py               # General state updater
+├── skills/earl-display-control/
+│   └── SKILL.md                     # Skill definition for AI agents
+├── dist/
+│   └── earl-display-control.skill   # Packaged skill for distribution
+└── README.md
+```
+
+## Privacy
+
+The live `earl_mind.json` file is gitignored and never pushed to the repository — it contains real household state. Only the sanitized template (`earl_mind.template.json`) is included in source control.
