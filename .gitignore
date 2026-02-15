@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+.venv/
+venv/
+
+# Node/Web artifacts
+node_modules/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Skill packaging artifacts (regenerate as needed)
+*.skill
+!dist/earl-display-control.skill
+
+# Live Earl state (provide template instead)
+VisuoSpatialSketchpad/earl_mind.json
