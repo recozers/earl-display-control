@@ -75,7 +75,7 @@ All scripts live in the `VisuoSpatialSketchpad/` directory.
 ### Prerequisites
 
 - Python 3
-- A browser with kiosk/fullscreen support (Edge recommended)
+- A browser with kiosk/fullscreen support (Chrome, Edge, or Chromium recommended)
 
 ### Setup
 
@@ -104,8 +104,18 @@ All scripts live in the `VisuoSpatialSketchpad/` directory.
    python -m http.server 8000
    ```
 5. Open the dashboard in a browser at `http://localhost:8000/sketchpad.html`, or launch a full-screen kiosk:
+
+   **macOS:**
+   ```bash
+   open -a "Google Chrome" --args --kiosk http://localhost:8000/sketchpad.html
+   ```
+   **Windows:**
    ```powershell
    Start-Process msedge.exe '--kiosk http://localhost:8000/sketchpad.html --edge-kiosk-type=fullscreen'
+   ```
+   **Linux:**
+   ```bash
+   chromium-browser --kiosk http://localhost:8000/sketchpad.html
    ```
 
 Earl's TV is now live. Update `earl_mind.json` (directly or via the API) and the display will pick up changes within seconds.
@@ -130,6 +140,30 @@ earl-display-control/
 │   └── earl-display-control.skill   # Packaged skill for distribution
 └── README.md
 ```
+
+## OpenClaw Skill
+
+This project includes an [OpenClaw](https://github.com/anthropics/claude-code) skill that lets AI agents manage the display. The skill works on macOS, Windows, and Linux.
+
+### Install from the packaged `.skill` file
+
+```bash
+openclaw skill install dist/earl-display-control.skill
+```
+
+### Install manually
+
+Copy the skill directory into your OpenClaw skills folder:
+
+```bash
+# macOS / Linux
+cp -r skills/earl-display-control ~/.openclaw/skills/
+
+# Windows (PowerShell)
+Copy-Item -Recurse skills\earl-display-control $env:USERPROFILE\.openclaw\skills\
+```
+
+Once installed, the skill is available as `/earl-display-control` in any Claude Code session. It requires `python3` on your PATH.
 
 ## Privacy
 
