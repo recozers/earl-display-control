@@ -21,7 +21,7 @@ Everything required to bring the living-room TV display (VisuoSpatial Sketchpad)
 ## Waking the Display (Server + Kiosk)
 
 ### 1. Restart the local server
-- Run inside `C:\Users\Stuart\.openclaw\workspace\VisuoSpatialSketchpad`:
+- Run inside the `VisuoSpatialSketchpad` directory:
   ```powershell
   python -m http.server 8000
   ```
@@ -51,21 +51,21 @@ mind = EarlMind()
 ### House Stuff (Important board)
 ```python
 mind.post_house_stuff(
-    title="Phil is down bad",
-    detail="He is sick. Be kind, bring water, keep the noise down.",
-    priority="high",
-    category="care",
-    icon=":sick-face:")
+    title="Dishwasher needs unloading",
+    detail="Cycle finished an hour ago. Plates are dry.",
+    priority="medium",
+    category="chores",
+    icon=":sparkles:")
 ```
 - Remove items with `mind.resolve_house_stuff(item_id)` or clear all with `mind.clear_house_stuff()`.
 
 ### Earl Unplugged (takes)
 ```python
 mind.hot_take(
-    topic="Earl has a wife",
-    take="Earl has a wife!!!",
+    topic="Pineapple on pizza",
+    take="Controversial but I respect the audacity.",
     heat=0.73,
-    emoji=":ring:")
+    emoji=":pizza:")
 ```
 - Calling `hot_take` again with the same topic updates it; use `mind.drop_take(topic)` to delete.
 - For manual reordering, edit `data['earl_unplugged']` or run helper scripts such as `reorder_take.py`, then rewrite the JSON with `ensure_ascii=False, indent=2` and bump `meta`.

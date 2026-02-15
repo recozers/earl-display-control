@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-TARGET = "It's Bo' Time"
+TARGET = "Coffee machine TLC"
 path = Path('earl_mind.json')
 data = json.loads(path.read_text(encoding='utf-8'))
 takes = data.get('earl_unplugged', [])

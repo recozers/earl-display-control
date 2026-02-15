@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Earl's Mind — Woodburn</title>
+<title>Earl's Mind</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
 
@@ -948,9 +948,17 @@ function renderMind(mind) {
 }
 
 // === WEATHER (Open-Meteo — free, no API key) ===
-const DURHAM_LAT = 35.994;
-const DURHAM_LON = -78.899;
-const WEATHER_URL = `https://api.open-meteo.com/v1/forecast?latitude=${DURHAM_LAT}&longitude=${DURHAM_LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=America/New_York&forecast_days=4`;
+// Location is read from earl_mind.json (spatial_awareness.location)
+// Set your coordinates in earl_mind.json to enable weather
+let WEATHER_URL = null;
+
+function buildWeatherUrl(loc) {
+  if (!loc || !loc.latitude || !loc.longitude) return null;
+  const unit = loc.temperature_unit || 'fahrenheit';
+  const wind = loc.wind_speed_unit || 'mph';
+  const tz = loc.timezone || 'America/New_York';
+  return `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&temperature_unit=${unit}&windspeed_unit=${wind}&timezone=${tz}&forecast_days=4`;
+}
 
 const WMO_CODES = {
   0: { icon: '☀️', desc: 'Clear' },
@@ -991,6 +999,13 @@ const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 let cachedWeather = null;
 
 async function fetchWeather() {
+  if (!WEATHER_URL) {
+    const container = document.getElementById('weather-container');
+    if (container) {
+      container.innerHTML = `<div class="hw-loading" style="opacity:0.5;">Set location in earl_mind.json</div>`;
+    }
+    return;
+  }
   try {
     const r = await fetch(WEATHER_URL);
     if (!r.ok) throw new Error('Weather fetch failed');
@@ -1065,7 +1080,11 @@ let currentMind = null;
 
 async function init() {
   currentMind = await loadMind();
-  if (currentMind) renderMind(currentMind);
+  if (currentMind) {
+    renderMind(currentMind);
+    const loc = currentMind.spatial_awareness && currentMind.spatial_awareness.location;
+    WEATHER_URL = buildWeatherUrl(loc);
+  }
   fetchWeather();
 }
 

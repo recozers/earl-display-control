@@ -10,7 +10,7 @@ house_item = {
     "icon": "🗑️"
 }
 mind["house_stuff"] = {"items": [house_item]}
-mind["earl_unplugged"] = [entry for entry in mind["earl_unplugged"] if entry["topic"] not in {"Phil's cooking", "The thermostat wars"}]
+mind["earl_unplugged"] = [entry for entry in mind["earl_unplugged"] if entry["topic"] not in {"Old takes", "The thermostat wars"}]
 mind["earl_unplugged"].append({
     "id": "eu_coffee",
     "topic": "Coffee machine TLC",

@@ -84,12 +84,26 @@ All scripts live in the `VisuoSpatialSketchpad/` directory.
    ```bash
    cp VisuoSpatialSketchpad/earl_mind.template.json VisuoSpatialSketchpad/earl_mind.json
    ```
-3. Start the server:
+3. Configure your location in `earl_mind.json` — edit the `spatial_awareness` section:
+   ```json
+   "spatial_awareness": {
+     "house_name": "My House",
+     "location": {
+       "latitude": 40.7128,
+       "longitude": -74.0060,
+       "timezone": "America/New_York",
+       "temperature_unit": "fahrenheit",
+       "wind_speed_unit": "mph"
+     }
+   }
+   ```
+   Set `latitude` and `longitude` to your coordinates for live weather. Leave them at `0.0` to disable weather.
+4. Start the server:
    ```bash
    cd VisuoSpatialSketchpad
    python -m http.server 8000
    ```
-4. Open the dashboard in a browser at `http://localhost:8000/sketchpad.html`, or launch a full-screen kiosk:
+5. Open the dashboard in a browser at `http://localhost:8000/sketchpad.html`, or launch a full-screen kiosk:
    ```powershell
    Start-Process msedge.exe '--kiosk http://localhost:8000/sketchpad.html --edge-kiosk-type=fullscreen'
    ```

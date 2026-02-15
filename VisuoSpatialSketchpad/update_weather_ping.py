@@ -5,10 +5,21 @@ import urllib.request
 
 from earl_api import EarlMind
 
+# Read location from earl_mind.json
+_mind_path = Path(__file__).parent / "earl_mind.json"
+_mind_data = json.loads(_mind_path.read_text(encoding="utf-8"))
+_loc = _mind_data.get("spatial_awareness", {}).get("location", {})
+_lat = _loc.get("latitude", 0.0)
+_lon = _loc.get("longitude", 0.0)
+_tz = _loc.get("timezone", "America/New_York")
+_temp_unit = _loc.get("temperature_unit", "fahrenheit")
+_wind_unit = _loc.get("wind_speed_unit", "mph")
+_house_name = _mind_data.get("spatial_awareness", {}).get("house_name", "the house")
+
 URL = (
-    "https://api.open-meteo.com/v1/forecast?latitude=35.994&longitude=-78.899"
-    "&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m"
-    "&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=America/New_York"
+    f"https://api.open-meteo.com/v1/forecast?latitude={_lat}&longitude={_lon}"
+    f"&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m"
+    f"&temperature_unit={_temp_unit}&windspeed_unit={_wind_unit}&timezone={_tz}"
 )
 
 WMO = {
@@ -59,7 +70,7 @@ humidity = round(cur.get("relative_humidity_2m", 0))
 time_str = datetime.now().strftime("%H:%M")
 
 mind = EarlMind()
-vibe = f"{desc} morning over Woodburn — {temp}°F (feels {feel}°F). Weather ping logged {time_str}."
+vibe = f"{desc} morning over {_house_name} — {temp}°F (feels {feel}°F). Weather ping logged {time_str}."
 mind.set_mood("alert", energy=0.82, vibe=vibe, expression="eyes_up")
 
 note = f"{icon} {desc} · {temp}°F / feels {feel}°F"
