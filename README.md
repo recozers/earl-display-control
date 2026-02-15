@@ -135,9 +135,8 @@ earl-display-control/
 │   ├── remove_noise_take.py         # Hot take remover
 │   └── update_mind.py               # General state updater
 ├── skills/earl-display-control/
-│   └── SKILL.md                     # Skill definition for AI agents
-├── dist/
-│   └── earl-display-control.skill   # Packaged skill for distribution
+│   └── SKILL.md                     # Skill definition (source copy)
+├── SKILL.md                         # Skill definition (ClawHub root)
 └── README.md
 ```
 
@@ -145,10 +144,10 @@ earl-display-control/
 
 This project includes an [OpenClaw](https://github.com/anthropics/claude-code) skill that lets AI agents manage the display. The skill works on macOS, Windows, and Linux.
 
-### Install from the packaged `.skill` file
+### Install from ClawHub
 
 ```bash
-openclaw skill install dist/earl-display-control.skill
+openclaw skill install earl-display-control
 ```
 
 ### Install manually

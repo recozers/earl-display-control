@@ -14,9 +14,9 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-# Skill packaging artifacts (regenerate as needed)
+# Skill packaging artifacts (regenerate locally as needed)
+dist/
 *.skill
-!dist/earl-display-control.skill
 
 # Live Earl state (provide template instead)
 VisuoSpatialSketchpad/earl_mind.json
